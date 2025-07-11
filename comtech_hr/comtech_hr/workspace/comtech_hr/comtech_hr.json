@@ -1,0 +1,68 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"ELOc7k3G6-\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Comtech HR</span>\",\"col\":12}},{\"id\":\"E3fMBQZnLB\",\"type\":\"card\",\"data\":{\"card_name\":\"Custom Doctypes\",\"col\":4}}]",
+ "creation": "2025-07-11 08:07:42.721044",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "project",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Comtech HR",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Custom Doctypes",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Vacation Calculation",
+   "link_count": 0,
+   "link_to": "Vacation Calculation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Comtech HR Settings",
+   "link_count": 0,
+   "link_to": "Comtech HR Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Return From Vacation ",
+   "link_count": 0,
+   "link_to": "Return From Vacation DT",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-07-11 11:35:23.128063",
+ "modified_by": "Administrator",
+ "module": "ComTech HR",
+ "name": "Comtech HR",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 41.0,
+ "shortcuts": [],
+ "title": "Comtech HR"
+}
