@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-09 11:49:31.898010",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "per_month_days",
+  "column_break_kqxv2",
+  "per_year_days"
+ ],
+ "fields": [
+  {
+   "fieldname": "per_month_days",
+   "fieldtype": "Int",
+   "label": "Per Month Days"
+  },
+  {
+   "fieldname": "per_year_days",
+   "fieldtype": "Int",
+   "label": "Per Year Days"
+  },
+  {
+   "fieldname": "column_break_kqxv2",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-07-09 11:49:49.290534",
+ "modified_by": "Administrator",
+ "module": "ComTech HR",
+ "name": "Comtech HR Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

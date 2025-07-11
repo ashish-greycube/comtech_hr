@@ -1,0 +1,228 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:VC-{employee_no}-{###}",
+ "creation": "2025-07-08 08:05:21.361553",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee_details_section",
+  "company",
+  "transaction_date",
+  "employee_no",
+  "employee_name",
+  "department",
+  "payment_status",
+  "column_break_zrrzn",
+  "leave_application_reference",
+  "leave_start_date",
+  "leave_end_date",
+  "calculate_ticket",
+  "deduct_loan",
+  "deduct_petty_cash",
+  "section_break_x0mcd",
+  "no_of_days_for_calculation",
+  "vacation_due_amount",
+  "petty_cash_amount",
+  "column_break_9na4d",
+  "per_day_vacation_amount",
+  "ticket_amount",
+  "loan_amount",
+  "section_break_wcnnk",
+  "extra_payment",
+  "column_break_doovc",
+  "net_amount_for_vacation",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "default": "Today",
+   "fieldname": "transaction_date",
+   "fieldtype": "Date",
+   "label": "Transaction Date"
+  },
+  {
+   "fieldname": "employee_no",
+   "fieldtype": "Link",
+   "label": "Employee No",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "default": "Unpaid",
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "Unpaid\nPaid"
+  },
+  {
+   "fieldname": "column_break_zrrzn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "leave_application_reference",
+   "fieldtype": "Link",
+   "label": "Leave Application Reference",
+   "options": "Leave Application"
+  },
+  {
+   "fieldname": "leave_start_date",
+   "fieldtype": "Date",
+   "label": "Leave Start Date"
+  },
+  {
+   "fieldname": "leave_end_date",
+   "fieldtype": "Date",
+   "label": "Leave End Date"
+  },
+  {
+   "fieldname": "calculate_ticket",
+   "fieldtype": "Select",
+   "label": "Calculate Ticket",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "deduct_loan",
+   "fieldtype": "Select",
+   "label": "Deduct Loan",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "deduct_petty_cash",
+   "fieldtype": "Select",
+   "label": "Deduct Petty Cash",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "section_break_x0mcd",
+   "fieldtype": "Section Break",
+   "label": "Amounts"
+  },
+  {
+   "fieldname": "per_day_vacation_amount",
+   "fieldtype": "Currency",
+   "label": "Per Day Vacation Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "no_of_days_for_calculation",
+   "fieldtype": "Int",
+   "label": "No of Days for Calculation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "vacation_due_amount",
+   "fieldtype": "Currency",
+   "label": "Vacation Due Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.calculate_ticket == \"Yes\";",
+   "fieldname": "ticket_amount",
+   "fieldtype": "Currency",
+   "label": "Ticket Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.deduct_loan == \"Yes\";",
+   "fieldname": "loan_amount",
+   "fieldtype": "Currency",
+   "label": "Loan Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.deduct_petty_cash == \"Yes\";",
+   "fieldname": "petty_cash_amount",
+   "fieldtype": "Currency",
+   "label": "Petty Cash Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "extra_payment",
+   "fieldtype": "Currency",
+   "label": "Extra Payment"
+  },
+  {
+   "fieldname": "net_amount_for_vacation",
+   "fieldtype": "Currency",
+   "label": "Net Amount for Vacation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_9na4d",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_wcnnk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_doovc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_details_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Details"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Vacation Calculation",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [
+  {
+   "link_doctype": "Journal Entry",
+   "link_fieldname": "custom_vacation_calculation_reference"
+  }
+ ],
+ "modified": "2025-07-11 08:25:21.200706",
+ "modified_by": "Administrator",
+ "module": "ComTech HR",
+ "name": "Vacation Calculation",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

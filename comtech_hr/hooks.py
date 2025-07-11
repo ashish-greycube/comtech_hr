@@ -8,6 +8,9 @@ app_license = "MIT"
 # Includes in <head>
 # ------------------
 
+# after migrate hooks
+after_migrate = "comtech_hr.migrate.after_migrate"
+
 # include js, css files in header of desk.html
 # app_include_css = "/assets/comtech_hr/css/comtech_hr.css"
 # app_include_js = "/assets/comtech_hr/js/comtech_hr.js"
@@ -27,7 +30,10 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+    "Leave Type" : "public/js/leave_type.js",
+    "Leave Application" : "public/js/leave_application.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
