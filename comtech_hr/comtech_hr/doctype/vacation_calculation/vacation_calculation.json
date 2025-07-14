@@ -23,13 +23,16 @@
   "deduct_loan",
   "deduct_petty_cash",
   "section_break_x0mcd",
-  "no_of_days_for_calculation",
-  "vacation_due_amount",
-  "petty_cash_amount",
-  "column_break_9na4d",
+  "no_of_leave_days",
   "per_day_vacation_amount",
-  "ticket_amount",
+  "vacation_due_amount",
   "loan_amount",
+  "column_break_9na4d",
+  "work_start_date",
+  "work_end_date",
+  "no_of_days_worked_in_company",
+  "ticket_amount",
+  "petty_cash_amount",
   "section_break_wcnnk",
   "extra_payment",
   "column_break_doovc",
@@ -123,12 +126,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "no_of_days_for_calculation",
-   "fieldtype": "Int",
-   "label": "No of Days for Calculation",
-   "read_only": 1
-  },
-  {
    "fieldname": "vacation_due_amount",
    "fieldtype": "Currency",
    "label": "Vacation Due Amount",
@@ -192,6 +189,28 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "description": "For Vacation Calculation",
+   "fieldname": "no_of_leave_days",
+   "fieldtype": "Int",
+   "label": "No of Leave Days",
+   "read_only": 1
+  },
+  {
+   "fieldname": "no_of_days_worked_in_company",
+   "fieldtype": "Int",
+   "label": "No of Days Worked In Company"
+  },
+  {
+   "fieldname": "work_start_date",
+   "fieldtype": "Date",
+   "label": "Work Start Date"
+  },
+  {
+   "fieldname": "work_end_date",
+   "fieldtype": "Date",
+   "label": "Work End Date"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -202,7 +221,7 @@
    "link_fieldname": "custom_vacation_calculation_reference"
   }
  ],
- "modified": "2025-07-11 08:25:21.200706",
+ "modified": "2025-07-14 06:38:16.937237",
  "modified_by": "Administrator",
  "module": "ComTech HR",
  "name": "Vacation Calculation",

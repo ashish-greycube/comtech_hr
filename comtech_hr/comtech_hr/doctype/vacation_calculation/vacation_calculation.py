@@ -29,14 +29,14 @@ def make_journal_entry(source_name, target_doc=None):
 			target.append('accounts', row)
 
 		if source.calculate_ticket == "Yes":
-			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_due_amount_for_ticket" )
-			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Due Amount For Ticket")))
+			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_ticket_expense_due_account" )
+			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Ticket Expense Due Account")))
 			row = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
 			target.append('accounts', row)
 
 		if source.extra_payment > 0:
-			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_exttra_due_amount_account" )
-			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Extra Due Amount Account")))
+			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_extra_payment_due_account" )
+			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Extra Payment Due Account")))
 			row = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
 			target.append('accounts', row)
 
@@ -183,7 +183,7 @@ class VacationCalculation(Document):
 		net_total = 0
 
 		date_difference = date_diff(self.leave_end_date, self.leave_start_date) + 1
-		self.no_of_days_for_calculation = date_difference or 0
+		self.no_of_leave_days = date_difference or 0
 
 		total_vacation_amount = frappe.db.sql('''
 				SELECT SUM(tsd.amount) AS "total_amount"
@@ -204,13 +204,17 @@ class VacationCalculation(Document):
 
 		if self.calculate_ticket == "Yes":
 			emp_yearly_ticket_amount = frappe.db.get_value("Employee", self.employee_no, "custom_ticket_amount")
-			days_per_year = frappe.db.get_single_value("Comtech HR Settings", "per_year_days")
+			days_per_year = frappe.db.get_single_value("Comtech HR Settings", "no_of_days_in_a_year")
 			if days_per_year > 0:
 				per_day_ticket_amount = emp_yearly_ticket_amount / days_per_year
 				working_start_date, doctype, docname = get_working_start_date(self.employee_no) 
 				working_end_date = frappe.utils.add_to_date(self.leave_start_date, days=-1)
 				total_working_days = date_diff(working_end_date, working_start_date)
 				final_ticket_amount = round(per_day_ticket_amount, 2) * total_working_days or 0
+				
+				self.work_start_date = working_start_date
+				self.work_end_date = working_end_date
+				self.no_of_days_worked_in_company = total_working_days
 				self.ticket_amount = final_ticket_amount or 0
 				net_total = net_total + self.ticket_amount
 
@@ -243,19 +247,19 @@ class VacationCalculation(Document):
 
 		if self.calculate_ticket == "Yes":
 			debit = frappe.db.get_value("Company", self.company, "custom_default_ticket_expense_account")
-			credit = frappe.db.get_value("Company", self.company, "custom_default_due_amount_for_ticket")
+			credit = frappe.db.get_value("Company", self.company, "custom_default_ticket_expense_due_account")
 			if debit and credit != "" or None:
 				create_payment_jv_from_vacation_calculation(self,debit,credit,self.ticket_amount,None,"Employee",self.employee_no)
 			else:
-				frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Ticket Expense Account" if debit == "" else "Due Amount For Ticket")))
+				frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Ticket Expense Account" if debit == "" else "Ticket Expense Due Account")))
 
 		if self.extra_payment > 0:
 			debit = frappe.db.get_value("Company", self.company, "custom_default_extra_payment_expense_account")
-			credit = frappe.db.get_value("Company", self.company, "custom_default_exttra_due_amount_account")
+			credit = frappe.db.get_value("Company", self.company, "custom_default_extra_payment_due_account")
 			if debit and credit != "" or None:
 				create_payment_jv_from_vacation_calculation(self,debit,credit,self.extra_payment,None,"Employee",self.employee_no)
 			else:
-				frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Extra Payment Expense" if debit=="" else "Extra Due Amount Account")))
+				frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Extra Payment Expense" if debit=="" else "Extra Payment Due Account")))
 
 		if self.deduct_loan == "Yes":
 			debit = frappe.db.get_value("Company", self.company, "custom_default_vacation_due_employee_account")

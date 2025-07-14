@@ -3,7 +3,7 @@
 
 frappe.ui.form.on('Vacation Calculation', {
 	refresh: function(frm) {
-		frm.set_value("no_of_days_for_calculation", frappe.datetime.get_day_diff( frm.doc.leave_end_date , frm.doc.leave_start_date) + 1)
+		frm.set_value("no_of_leave_days", frappe.datetime.get_day_diff( frm.doc.leave_end_date , frm.doc.leave_start_date) + 1)
 
 		if (frm.doc.docstatus == 1){
 			frm.add_custom_button("Create Payment JV", function(frm) {
