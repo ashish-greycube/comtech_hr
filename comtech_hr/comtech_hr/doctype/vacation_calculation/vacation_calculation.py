@@ -13,32 +13,42 @@ from erpnext.accounts.report.general_ledger.general_ledger import execute
 @frappe.whitelist()
 def make_journal_entry(source_name, target_doc=None):
 	def set_missing_values(source, target):
+		total_credit_amount = 0   
 		target.voucher_type = "Journal Entry"
 		target.posting_date = today()
 		target.custom_vacation_calculation_reference = source.name
 
 		account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "default_payroll_payable_account")
 		if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Payroll Payable Account")))
-		row = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+		row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+		total_credit_amount = total_credit_amount + amount
 		target.append('accounts', row)
 
 		if source.vacation_due_amount > 0:
 			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_vacation_due_employee_account" )
 			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Vacation Due Employee Account")))
-			row = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			total_credit_amount = total_credit_amount + amount
 			target.append('accounts', row)
 
 		if source.calculate_ticket == "Yes":
 			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_ticket_expense_due_account" )
 			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Ticket Expense Due Account")))
-			row = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			total_credit_amount = total_credit_amount + amount
 			target.append('accounts', row)
 
 		if source.extra_payment > 0:
 			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_extra_payment_due_account" )
 			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Extra Payment Due Account")))
-			row = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			total_credit_amount = total_credit_amount + amount
 			target.append('accounts', row)
+
+		# Credit Row
+		row,  amount= create_payment_jv_table_data(source, source.company, source.employee_no, credit_account="", debit_account=None, party_type="Employee", party_name=source.employee_no)
+		row.update({'credit_in_account_currency' : total_credit_amount})
+		target.append('accounts', row)
 
 	doc = get_mapped_doc(
 		"Vacation Calculation",
@@ -58,6 +68,7 @@ def make_journal_entry(source_name, target_doc=None):
 
 
 def create_payment_jv_table_data(source,  company, employee, credit_account=None, debit_account=None, party_type=None, party_name=None):
+	amount = 0
 	company_default_cost_center = frappe.db.get_value("Company",company,"cost_center")
 
 	filters = frappe._dict({
@@ -69,31 +80,26 @@ def create_payment_jv_table_data(source,  company, employee, credit_account=None
 		"account" : [debit_account if debit_account != None else credit_account]
 	})
 
-	data = execute(filters)
-	if len(data[1]) > 0:
-		for d in data[1]:
-			if d.get('account') == "'Total'":
-				amount = d['balance']
-
 	accounts_row = {
-		"account" : debit_account,
+		"account" : debit_account if debit_account != None else credit_account,
 		"cost_center":company_default_cost_center,
 	}
 	if debit_account != None:
+		data = execute(filters)
+		if len(data[1]) > 0:
+			for d in data[1]:
+				if d.get('account') == "'Total'":
+					amount = d['balance']
 		accounts_row.update({
 			"debit_in_account_currency":amount
 		})
-	elif credit_account != None:
-		accounts_row.update({
-			"credit_in_account_currency":amount
-		})
 
 	account_type = frappe.db.get_value("Account", debit_account if debit_account != None else credit_account, "account_type")
-	if account_type in ["Receivable", "Payable"]:
+	if account_type != None and account_type in ["Receivable", "Payable"]:
 		accounts_row["party_type"] = party_type
 		accounts_row["party"] = party_name
 
-	return accounts_row
+	return accounts_row, amount
 
 
 def get_working_start_date(employee):

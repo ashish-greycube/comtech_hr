@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"ELOc7k3G6-\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Comtech HR</span>\",\"col\":12}},{\"id\":\"E3fMBQZnLB\",\"type\":\"card\",\"data\":{\"card_name\":\"Custom Doctypes\",\"col\":4}}]",
+ "content": "[{\"id\":\"ELOc7k3G6-\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Comtech HR</span>\",\"col\":12}},{\"id\":\"E3fMBQZnLB\",\"type\":\"card\",\"data\":{\"card_name\":\"Custom Doctypes\",\"col\":4}},{\"id\":\"QuRdy4iVtl\",\"type\":\"card\",\"data\":{\"card_name\":\"Core Doctypes\",\"col\":4}}]",
  "creation": "2025-07-11 08:07:42.721044",
  "custom_blocks": [],
  "docstatus": 0,
@@ -50,9 +50,58 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Core Doctypes",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Company",
+   "link_count": 0,
+   "link_to": "Company",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Journal Entry",
+   "link_count": 0,
+   "link_to": "Journal Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Leave Type",
+   "link_count": 0,
+   "link_to": "Leave Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Leave Application",
+   "link_count": 0,
+   "link_to": "Leave Application",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-07-11 11:35:23.128063",
+ "modified": "2025-07-16 10:42:50.103055",
  "modified_by": "Administrator",
  "module": "ComTech HR",
  "name": "Comtech HR",
