@@ -211,17 +211,21 @@ class VacationCalculation(Document):
 		if self.calculate_ticket == "Yes":
 			emp_yearly_ticket_amount = frappe.db.get_value("Employee", self.employee_no, "custom_ticket_amount")
 			days_per_year = frappe.db.get_single_value("Comtech HR Settings", "no_of_days_in_a_year")
+			ticket_method = frappe.db.get_single_value("Comtech HR Settings", "ticket_calculation_method")
+
 			if days_per_year > 0:
 				per_day_ticket_amount = emp_yearly_ticket_amount / days_per_year
 				working_start_date, doctype, docname = get_working_start_date(self.employee_no) 
 				working_end_date = frappe.utils.add_to_date(self.leave_start_date, days=-1)
 				total_working_days = date_diff(working_end_date, working_start_date)
-				final_ticket_amount = round(per_day_ticket_amount, 2) * total_working_days or 0
-				
 				self.work_start_date = working_start_date
 				self.work_end_date = working_end_date
 				self.no_of_days_worked_in_company = total_working_days
-				self.ticket_amount = final_ticket_amount or 0
+				
+				if ticket_method == "Auto":
+					final_ticket_amount = round(per_day_ticket_amount, 2) * total_working_days or 0
+					self.ticket_amount = final_ticket_amount or 0
+
 				net_total = net_total + self.ticket_amount
 
 		if self.deduct_petty_cash == "Yes":

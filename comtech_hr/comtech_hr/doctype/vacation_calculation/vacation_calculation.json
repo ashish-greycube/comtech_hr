@@ -200,17 +200,20 @@
   {
    "fieldname": "no_of_days_worked_in_company",
    "fieldtype": "Int",
-   "label": "No of Days Worked In Company"
+   "label": "No of Days Worked In Company",
+   "read_only": 1
   },
   {
    "fieldname": "work_start_date",
    "fieldtype": "Date",
-   "label": "Work Start Date"
+   "label": "Work Start Date",
+   "read_only": 1
   },
   {
    "fieldname": "work_end_date",
    "fieldtype": "Date",
-   "label": "Work End Date"
+   "label": "Work End Date",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -221,7 +224,7 @@
    "link_fieldname": "custom_vacation_calculation_reference"
   }
  ],
- "modified": "2025-07-14 06:38:16.937237",
+ "modified": "2025-07-18 13:27:53.758381",
  "modified_by": "Administrator",
  "module": "ComTech HR",
  "name": "Vacation Calculation",

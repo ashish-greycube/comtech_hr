@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "no_of_days_in_a_month",
+  "ticket_calculation_method",
   "column_break_kqxv2",
   "no_of_days_in_a_year"
  ],
@@ -25,12 +26,18 @@
    "fieldname": "no_of_days_in_a_year",
    "fieldtype": "Int",
    "label": "No Of Days In A Year"
+  },
+  {
+   "fieldname": "ticket_calculation_method",
+   "fieldtype": "Select",
+   "label": "Ticket Calculation Method",
+   "options": "Auto\nManual"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-11 12:34:05.890489",
+ "modified": "2025-07-18 13:28:50.251069",
  "modified_by": "Administrator",
  "module": "ComTech HR",
  "name": "Comtech HR Settings",

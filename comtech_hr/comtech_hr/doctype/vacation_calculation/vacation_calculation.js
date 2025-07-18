@@ -2,6 +2,16 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Vacation Calculation', {
+	setup: function(frm) {
+		let ticket_method 
+		frappe.db.get_single_value('Comtech HR Settings', 'ticket_calculation_method').then(res => {
+			ticket_method = res
+			if (ticket_method == "Manual") {
+				frm.set_df_property('ticket_amount', 'read_only', 0)
+			}
+		})
+	},
+
 	refresh: function(frm) {
 		frm.set_value("no_of_leave_days", frappe.datetime.get_day_diff( frm.doc.leave_end_date , frm.doc.leave_start_date) + 1)
 
