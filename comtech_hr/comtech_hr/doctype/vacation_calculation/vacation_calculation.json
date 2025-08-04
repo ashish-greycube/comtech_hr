@@ -10,29 +10,35 @@
  "field_order": [
   "employee_details_section",
   "company",
-  "transaction_date",
   "employee_no",
-  "employee_name",
   "department",
-  "payment_status",
   "column_break_zrrzn",
+  "transaction_date",
+  "employee_name",
+  "payment_status",
+  "leave_details_section",
   "leave_application_reference",
   "leave_start_date",
   "leave_end_date",
-  "calculate_ticket",
-  "deduct_loan",
-  "deduct_petty_cash",
-  "section_break_x0mcd",
   "no_of_leave_days",
+  "column_break_32afe",
+  "no_of_days_worked_in_company",
+  "work_start_date",
+  "work_end_date",
+  "amount_calculation_section",
+  "calculate_ticket",
+  "deduct_petty_cash",
+  "column_break_irzbp",
+  "deduct_loan",
+  "calculate_current_month_salary",
+  "section_break_x0mcd",
   "per_day_vacation_amount",
   "vacation_due_amount",
   "loan_amount",
   "column_break_9na4d",
-  "work_start_date",
-  "work_end_date",
-  "no_of_days_worked_in_company",
   "ticket_amount",
   "petty_cash_amount",
+  "current_month_salary",
   "section_break_wcnnk",
   "extra_payment",
   "column_break_doovc",
@@ -117,7 +123,7 @@
   {
    "fieldname": "section_break_x0mcd",
    "fieldtype": "Section Break",
-   "label": "Amounts"
+   "label": "Amount Details"
   },
   {
    "fieldname": "per_day_vacation_amount",
@@ -214,6 +220,37 @@
    "fieldtype": "Date",
    "label": "Work End Date",
    "read_only": 1
+  },
+  {
+   "fieldname": "leave_details_section",
+   "fieldtype": "Section Break",
+   "label": "Leave Details"
+  },
+  {
+   "fieldname": "column_break_32afe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount_calculation_section",
+   "fieldtype": "Section Break",
+   "label": "Amount Calculation"
+  },
+  {
+   "fieldname": "column_break_irzbp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "calculate_current_month_salary",
+   "fieldtype": "Select",
+   "label": "Calculate Current Month Salary",
+   "options": "Yes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.calculate_current_month_salary == \"Yes\";",
+   "fieldname": "current_month_salary",
+   "fieldtype": "Currency",
+   "label": "Current Month Salary",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -224,7 +261,7 @@
    "link_fieldname": "custom_vacation_calculation_reference"
   }
  ],
- "modified": "2025-07-18 13:27:53.758381",
+ "modified": "2025-08-01 09:41:31.671679",
  "modified_by": "Administrator",
  "module": "ComTech HR",
  "name": "Vacation Calculation",

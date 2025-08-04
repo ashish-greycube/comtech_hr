@@ -7,7 +7,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 from erpnext.accounts.utils import get_balance_on
-from frappe.utils import date_diff, today, get_link_to_form
+from frappe.utils import date_diff, today, get_link_to_form, get_first_day, get_datetime
 from erpnext.accounts.report.general_ledger.general_ledger import execute 
 	
 @frappe.whitelist()
@@ -18,11 +18,14 @@ def make_journal_entry(source_name, target_doc=None):
 		target.posting_date = today()
 		target.custom_vacation_calculation_reference = source.name
 
-		account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "default_payroll_payable_account")
-		if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Payroll Payable Account")))
-		row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
-		total_credit_amount = total_credit_amount + amount
-		target.append('accounts', row)
+		if source.current_month_salary > 0:
+			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "default_payroll_payable_account")
+			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Payroll Payable Account")))
+			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no, account_fieldname="default_payroll_payable_account")
+			total_credit_amount = total_credit_amount + amount
+			target.append('accounts', row)
+		else:
+			frappe.msgprint(_("Payment JV For Current Month Salary Not Created Due To Amount Value 0"), alert=True)
 
 		if source.vacation_due_amount > 0:
 			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_vacation_due_employee_account" )
@@ -67,7 +70,7 @@ def make_journal_entry(source_name, target_doc=None):
 	return doc
 
 
-def create_payment_jv_table_data(source,  company, employee, credit_account=None, debit_account=None, party_type=None, party_name=None):
+def create_payment_jv_table_data(source,  company, employee, credit_account=None, debit_account=None, party_type=None, party_name=None, account_fieldname=None):
 	amount = 0
 	company_default_cost_center = frappe.db.get_value("Company",company,"cost_center")
 
@@ -90,6 +93,10 @@ def create_payment_jv_table_data(source,  company, employee, credit_account=None
 			for d in data[1]:
 				if d.get('account') == "'Total'":
 					amount = d['balance']
+
+		if account_fieldname != None and account_fieldname == 'default_payroll_payable_account':
+			amount = source.current_month_salary
+
 		accounts_row.update({
 			"debit_in_account_currency":amount
 		})
@@ -242,6 +249,40 @@ class VacationCalculation(Document):
 
 		if self.extra_payment > 0:
 			net_total = net_total + self.extra_payment
+
+		if self.calculate_current_month_salary == "Yes":
+			salary_structure = frappe.db.get_value("Salary Structure Assignment", {'employee' : self.employee_no}, 'salary_structure')
+			if salary_structure == None:
+				frappe.throw("Salary Structure Assignment Is Not Found For Employee {0}".format(self.employee_no))
+			ss_doc = frappe.get_doc('Salary Structure', salary_structure)
+			
+			total_salary = 0
+			if len(ss_doc.earnings) > 0:
+				for component in ss_doc.earnings:
+					total_salary = total_salary + component.amount
+
+			curr_month_working_start_date = get_first_day(self.work_end_date)
+			curr_month_working_end_date = self.work_end_date
+			worked_days = date_diff(curr_month_working_end_date, curr_month_working_start_date) + 1
+
+			lwp_data = frappe.db.sql('''
+				SELECT SUM(tla.total_leave_days) as "total_lwps" 
+				FROM `tabLeave Application` tla 
+				WHERE tla.employee = '{0}' 
+				AND  tla.from_date BETWEEN '{1}' AND '{2}'
+				AND tla.to_date BETWEEN '{1}' AND '{2}' 
+				AND tla.leave_type IN (SELECT lt.name FROM `tabLeave Type` as lt WHERE lt.is_lwp = 1)
+			'''.format(self.employee_no, curr_month_working_start_date, curr_month_working_end_date), as_dict=1, debug = 1)
+			
+			lwp_days = 0
+			if len(lwp_data) > 0:
+				if lwp_data[0].total_lwps != None:
+					lwp_days = lwp_data[0].total_lwps 
+
+			payable_salary = (total_salary / 30) * (worked_days - lwp_days)
+
+			self.current_month_salary = round(payable_salary, 2)
+			net_total = net_total + self.current_month_salary
 
 		self.net_amount_for_vacation = net_total
 		
