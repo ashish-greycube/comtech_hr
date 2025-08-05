@@ -30,25 +30,47 @@ def make_journal_entry(source_name, target_doc=None):
 		if source.vacation_due_amount > 0:
 			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_vacation_due_employee_account" )
 			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Vacation Due Employee Account")))
-			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no, account_fieldname="custom_default_vacation_due_employee_account")
 			total_credit_amount = total_credit_amount + amount
 			target.append('accounts', row)
 
 		if source.calculate_ticket == "Yes":
 			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_ticket_expense_due_account" )
 			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Ticket Expense Due Account")))
-			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no, account_fieldname="custom_default_ticket_expense_due_account")
 			total_credit_amount = total_credit_amount + amount
 			target.append('accounts', row)
 
 		if source.extra_payment > 0:
 			account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_extra_payment_due_account" )
 			if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Extra Payment Due Account")))
-			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no)
+			row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, debit_account=account, party_type="Employee", party_name=source.employee_no, account_fieldname="custom_default_extra_payment_due_account")
 			total_credit_amount = total_credit_amount + amount
 			target.append('accounts', row)
 
-		# Credit Row
+		# Credit Rows
+		if source.deduct_loan == "Yes":
+			if source.loan_amount == 0:
+				frappe.msgprint("Payment JV For Loan Deduct Not Created Due To Amount Value 0", alert=True)
+			else:
+				account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_loan_account_for_employee" )
+				if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Loan Account For Employee")))
+				row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, credit_account=account, party_type="Employee", party_name=source.employee_no, account_fieldname="custom_default_loan_account_for_employee")
+				total_credit_amount = total_credit_amount - amount
+				target.append('accounts', row)
+		
+		if source.deduct_petty_cash == "Yes":
+			if source.petty_cash_amount == 0:
+				frappe.msgprint("Payment JV For Petty Cash Not Created Due To Amount Value 0", alert=True)
+			else:
+				account = frappe.db.get_value("Company", {'company_name_in_arabic' : source.company}, "custom_default_petty_cash_account" )
+				if account == "": frappe.throw("In Company Default Account Is Not Set For {0} ".format(frappe.bold("Petty Cash Account")))
+				row, amount = create_payment_jv_table_data(source, source.company, source.employee_no, credit_account=account, party_type="Employee", party_name=source.employee_no, account_fieldname="custom_default_petty_cash_account")
+				total_credit_amount = total_credit_amount - amount
+				target.append('accounts', row)
+
+
+		# Credit Account
 		row,  amount= create_payment_jv_table_data(source, source.company, source.employee_no, credit_account="", debit_account=None, party_type="Employee", party_name=source.employee_no)
 		row.update({'credit_in_account_currency' : total_credit_amount})
 		target.append('accounts', row)
@@ -88,17 +110,37 @@ def create_payment_jv_table_data(source,  company, employee, credit_account=None
 		"cost_center":company_default_cost_center,
 	}
 	if debit_account != None:
-		data = execute(filters)
-		if len(data[1]) > 0:
-			for d in data[1]:
-				if d.get('account') == "'Total'":
-					amount = d['balance']
+		# data = execute(filters)
+		# if len(data[1]) > 0:
+		# 	for d in data[1]:
+		# 		if d.get('account') == "'Total'":
+		# 			amount = d['balance']
 
 		if account_fieldname != None and account_fieldname == 'default_payroll_payable_account':
 			amount = source.current_month_salary
+		
+		if account_fieldname != None and account_fieldname == 'custom_default_vacation_due_employee_account':
+			amount = source.vacation_due_amount
+
+		if account_fieldname != None and account_fieldname == 'custom_default_ticket_expense_due_account':
+			amount = source.ticket_amount
+
+		if account_fieldname != None and account_fieldname == 'custom_default_extra_payment_due_account':
+			amount = source.extra_payment
 
 		accounts_row.update({
 			"debit_in_account_currency":amount
+		})
+
+	if credit_account != None:
+		if account_fieldname != None and account_fieldname == 'custom_default_loan_account_for_employee':
+			amount = source.loan_amount
+		
+		if account_fieldname != None and account_fieldname == 'custom_default_petty_cash_account':
+			amount = source.petty_cash_amount
+
+		accounts_row.update({
+			"credit_in_account_currency":amount
 		})
 
 	account_type = frappe.db.get_value("Account", debit_account if debit_account != None else credit_account, "account_type")
@@ -315,24 +357,24 @@ class VacationCalculation(Document):
 			else:
 				frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Extra Payment Expense" if debit=="" else "Extra Payment Due Account")))
 
-		if self.deduct_loan == "Yes":
-			if self.loan_amount == 0:
-				frappe.msgprint("Cannot Create JV For Loan Amount With Value {0}".format(self.loan_amount))
-			elif self.loan_amount > 0:
-				debit = frappe.db.get_value("Company", self.company, "custom_default_vacation_due_employee_account")
-				credit = frappe.db.get_value("Company", self.company, "custom_default_loan_account_for_employee")
-				if debit and credit != "" or None:
-					create_payment_jv_from_vacation_calculation(self,debit,credit,self.loan_amount,None,"Employee",self.employee_no)
-				else:
-					frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Vacation Due Employee Account" if debit=="" else "Loan Account For Employee")))
+		# if self.deduct_loan == "Yes":
+		# 	if self.loan_amount == 0:
+		# 		frappe.msgprint("Cannot Create JV For Loan Amount With Value {0}".format(self.loan_amount))
+		# 	elif self.loan_amount > 0:
+		# 		debit = frappe.db.get_value("Company", self.company, "custom_default_vacation_due_employee_account")
+		# 		credit = frappe.db.get_value("Company", self.company, "custom_default_loan_account_for_employee")
+		# 		if debit and credit != "" or None:
+		# 			create_payment_jv_from_vacation_calculation(self,debit,credit,self.loan_amount,None,"Employee",self.employee_no)
+		# 		else:
+		# 			frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Vacation Due Employee Account" if debit=="" else "Loan Account For Employee")))
 
-		if self.deduct_petty_cash == "Yes":
-			if self.petty_cash_amount == 0:
-				frappe.msgprint("Cannot Create JV For Petty Cash Amount With Value {0}".format(self.petty_cash_amount))
-			elif self.petty_cash_amount > 0:
-				debit = frappe.db.get_value("Company", self.company, "custom_default_vacation_due_employee_account")
-				credit = frappe.db.get_value("Company", self.company, "custom_default_petty_cash_account")
-				if debit and credit != "" or None:
-					create_payment_jv_from_vacation_calculation(self,debit,credit,self.petty_cash_amount,None,"Employee",self.employee_no)
-				else:
-					frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Vacation Due Employee Account" if debit=="" else "Petty Cash Account")))
+		# if self.deduct_petty_cash == "Yes":
+		# 	if self.petty_cash_amount == 0:
+		# 		frappe.msgprint("Cannot Create JV For Petty Cash Amount With Value {0}".format(self.petty_cash_amount))
+		# 	elif self.petty_cash_amount > 0:
+		# 		debit = frappe.db.get_value("Company", self.company, "custom_default_vacation_due_employee_account")
+		# 		credit = frappe.db.get_value("Company", self.company, "custom_default_petty_cash_account")
+		# 		if debit and credit != "" or None:
+		# 			create_payment_jv_from_vacation_calculation(self,debit,credit,self.petty_cash_amount,None,"Employee",self.employee_no)
+		# 		else:
+		# 			frappe.throw("In Company Default Account Is Not Set For {0}".format(frappe.bold("Vacation Due Employee Account" if debit=="" else "Petty Cash Account")))

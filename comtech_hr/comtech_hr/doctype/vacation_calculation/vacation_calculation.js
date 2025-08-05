@@ -2,8 +2,8 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Vacation Calculation', {
-	setup: function(frm) {
-		let ticket_method 
+	onload: function (frm) {
+		let ticket_method = ""
 		frappe.db.get_single_value('Comtech HR Settings', 'ticket_calculation_method').then(res => {
 			ticket_method = res
 			if (ticket_method == "Manual") {

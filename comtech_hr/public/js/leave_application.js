@@ -16,12 +16,19 @@ frappe.ui.form.on("Leave Application", {
 
     refresh: function (frm) {
         if (frm.doc.docstatus == 1 && frm.doc.status == "Approved") {
-            frm.add_custom_button("Create Vacation Calculation", function () {
-                frappe.model.open_mapped_doc({
-                    method: 'comtech_hr.api.make_vacation_calculation',
-                    frm: cur_frm
+
+            frappe.db.get_list('Vacation Calculation', { filters: { 'leave_application_reference': frm.doc.name }, fields: ['name'] })
+                .then(res => {
+                    if (res.length == 0) {
+                        frm.add_custom_button("Create Vacation Calculation", function () {
+                            frappe.model.open_mapped_doc({
+                                method: 'comtech_hr.api.make_vacation_calculation',
+                                frm: cur_frm
+                            })
+                        })
+                    }
                 })
-            })
+
 
 
             frm.add_custom_button("Create Return From Vacation", function () {
