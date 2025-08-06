@@ -10,6 +10,16 @@ from erpnext.accounts.utils import get_balance_on
 from frappe.utils import date_diff, today, get_link_to_form, get_first_day, get_datetime
 from erpnext.accounts.report.general_ledger.general_ledger import execute 
 	
+def get_latest_salary_structure_assignment(employee, from_date):
+	salary_assignment = frappe.db.get_all("Salary Structure Assignment",
+								fields=["name", "salary_structure", "base"], filters={"from_date": ["<=", from_date], "employee":employee, "docstatus":1},
+								order_by = "from_date desc", limit=1)
+	if len(salary_assignment) > 0:
+		return salary_assignment[0].name
+	else:
+		frappe.throw(_("For {0} date No Salary Structure Assignment Found for {1} Employee").format(from_date, employee))
+
+
 @frappe.whitelist()
 def make_journal_entry(source_name, target_doc=None):
 	def set_missing_values(source, target):
@@ -240,6 +250,13 @@ class VacationCalculation(Document):
 		date_difference = date_diff(self.leave_end_date, self.leave_start_date) + 1
 		self.no_of_leave_days = date_difference or 0
 
+		salary_structure_assignment = get_latest_salary_structure_assignment(self.employee_no, today())
+		
+		if salary_structure_assignment != None:
+			salary_structure_name = frappe.db.get_value("Salary Structure Assignment", salary_structure_assignment, 'salary_structure')
+		else:
+			frappe.throw(_("There is no Salary Structure Assignment For Employee {0}".format(self.employee_no)))
+
 		total_vacation_amount = frappe.db.sql('''
 				SELECT SUM(tsd.amount) AS "total_amount"
 				FROM `tabSalary Structure` tss 
@@ -247,8 +264,9 @@ class VacationCalculation(Document):
 				ON tss.name = tsd.parent
 				WHERE tsd.parenttype = "Salary Structure"
 				AND tss.company = "{0}"
+				AND tss.name = "{1}"
 				AND tsd.custom_include_in_vacation_leave_type_calculation = 1;
-			'''.format(self.company),
+			'''.format(self.company, salary_structure_name),
 		as_dict = 1)
 		if len(total_vacation_amount) > 0:
 			if total_vacation_amount[0]['total_amount'] != None:
