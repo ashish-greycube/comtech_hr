@@ -4,6 +4,7 @@ app_publisher = "GreyCube Technologies"
 app_description = "customization for Saudi Arabi HR"
 app_email = "admin@greycube.in"
 app_license = "MIT"
+required_apps = ["frappe/hrms"]
 
 # Includes in <head>
 # ------------------
@@ -122,13 +123,11 @@ doctype_js = {
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Attendance": {
+		"validate": "comtech_hr.api.calculate_actual_working_hours"
+	}
+}
 
 # Scheduled Tasks
 # ---------------

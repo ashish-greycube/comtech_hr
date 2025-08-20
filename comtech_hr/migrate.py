@@ -137,15 +137,33 @@ def after_migrate():
             )
         ],
 
-        "Return From Vacation DT": [
+        "Attendance": [
             dict(
-                fieldname = "custom_leave_application_reference",
-                fieldtype = "Link",
-                label = _("Leave Application Reference"),
-                options = "Leave Application",
+                fieldname = "custom_expected_working_hours",
+                fieldtype = "Float",
+                label = _("Expected Working Hours"),
                 is_custom_field = 1,
                 is_system_generated = 0,
-                insert_after = "no_of_delay"
+                precision = 2,
+                insert_after = "working_hours",
+            ),
+            dict(
+                fieldname = "custom_actual_early_minutes",
+                fieldtype = "Float",
+                label = _("Actual Early Minutes"),
+                is_custom_field = 1,
+                is_system_generated = 0,
+                precision = 2,
+                insert_after = "early_exit"
+            ),
+            dict(
+                fieldname = "custom_actual_delay_minutes",
+                fieldtype = "Float",
+                label = _("Actual Delay Minutes"),
+                is_custom_field = 1,
+                is_system_generated = 0,
+                precision = 2,
+                insert_after = "custom_actual_early_minutes"
             )
         ]
     }
@@ -173,4 +191,4 @@ def update_dashboard_link_for_core_doctype(doctype,link_doctype,link_fieldname,g
         frappe.log_error(frappe.get_traceback())
 
 update_dashboard_link_for_core_doctype(doctype='Leave Application',link_doctype='Vacation Calculation',link_fieldname='leave_application_reference',group=None)
-update_dashboard_link_for_core_doctype(doctype='Leave Application',link_doctype='Return From Vacation DT',link_fieldname='custom_leave_application_reference',group=None)
+update_dashboard_link_for_core_doctype(doctype='Leave Application',link_doctype='Return From Vacation DT',link_fieldname='leave_application_reference',group=None)
