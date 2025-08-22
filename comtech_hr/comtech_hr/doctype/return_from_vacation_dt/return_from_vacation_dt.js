@@ -22,6 +22,6 @@ function get_diff(start_date,end_date) {
 	}
 	if(start_date && end_date){
 		let diff = frappe.datetime.get_day_diff(end_date, start_date);
-		return diff + 1;
+		return diff;
 	}
 }

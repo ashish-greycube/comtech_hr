@@ -62,12 +62,14 @@
   {
    "fieldname": "leave_date",
    "fieldtype": "Date",
-   "label": "Leave Start date"
+   "label": "Leave Start date",
+   "read_only": 1
   },
   {
    "fieldname": "return_date",
    "fieldtype": "Date",
-   "label": "Return Date"
+   "label": "Return Date",
+   "read_only": 1
   },
   {
    "fieldname": "return_to_work_date",
@@ -101,7 +103,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-19 14:49:44.035110",
+ "modified": "2025-08-22 11:19:40.155366",
  "modified_by": "Administrator",
  "module": "ComTech HR",
  "name": "Return From Vacation DT",

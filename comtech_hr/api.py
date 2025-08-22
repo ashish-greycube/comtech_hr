@@ -31,7 +31,9 @@ def make_vacation_calculation(source_name, target_doc=None):
 def make_return_from_vacation(source_name, target_doc=None):
     def set_missing_value(source, target):
         target.designation = frappe.db.get_value("Employee", source.employee, "designation")
-
+        return_date = frappe.utils.add_to_date(source.to_date, days = 1)
+        target.return_date = return_date
+		
     doc = get_mapped_doc(
         "Leave Application",
         source_name,
@@ -43,7 +45,6 @@ def make_return_from_vacation(source_name, target_doc=None):
                     "employee_name" : "employee_name",
                     "department" : "department",
                     "from_date" : "leave_date",
-                    "to_date" : "return_date",
                     "name" : "leave_application_reference"
                 }
             }
